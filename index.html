@@ -511,7 +511,12 @@ label.required::after {
       */
 
      setTimeout(() => {
-  if (reasonSection.style.display === 'block') {
+  if (reasonSection.style.display === 'block' && reasonSelect) {
+    const currentEvent = document.getElementById('event')?.value?.trim();
+
+    //only proceed if event is selected
+    if(!currentEvent) return;
+
     reasonSection.style.display = 'none';
     const phone = document.getElementById('phone').value.trim();
     const email = document.getElementById('email').value.trim();
@@ -648,33 +653,6 @@ label.required::after {
       status.textContent = '';
       status.classList.remove("status-auto");
     }
-
-    /*function submitGoogle(data){
-       
-      // build a form and submit it to the Google Form response endpoint inside the hidden iframe
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = FORM_ACTION;
-      form.target = 'hidden_iframe';
-
-      console.log("Submitting data to Google:", data);
-
-      for (const key in data) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = data[key];
-        form.appendChild(input);
-      }
-
-      // append & submit
-      document.body.appendChild(form);
-      form.submit();
-
-      // cleanup after a short delay
-      setTimeout(()=>{ try{ document.body.removeChild(form);}catch(e){} }, 1500);
-    }
-      */
 
     function submitGoogle(data) {
       console.log("Submitting data to Google Web App:", data);
