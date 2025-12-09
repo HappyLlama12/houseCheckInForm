@@ -512,7 +512,7 @@ label.required::after {
         welcomeMessage.classList.add('status-success');  // green for normal
       }
       */
-
+/*
      setTimeout(() => {
   if (reasonSection.style.display === 'block' && reasonSelect) {
     const currentEvent = document.getElementById('event')?.value?.trim();
@@ -535,7 +535,7 @@ label.required::after {
   }
 }, 20000); // 12000ms = 12s
 
-
+*/
          }
 
     function hideWelcomeMessage() {
@@ -616,6 +616,14 @@ label.required::after {
         localStorage.setItem("clubBirthday", birthday);
         localStorage.setItem("clubFaculty", faculty);
       }
+
+      const eventName = document.getElementById('event').value.trim();
+
+        // If event is present → skip reasons page entirely
+        if (eventName) {
+          handleReasonSubmit(name, phone, email, grad, birthday, faculty, eventName, "", true);
+          return;
+        }
       
 
       showWelcomeMessage(name,false);
@@ -641,13 +649,17 @@ label.required::after {
     const location = document.getElementById('location').value || "unknown";
 
     const eventName = document.getElementById('event').value ||"unknown";
-    const data = { name, phone, email, grad, birthday, faculty, reason, other, location, event: eventName};
+    const data = { name, phone, email, grad, birthday, faculty, reason, other, location};
     submitGoogle(data);
 
     welcomeMessage.classList.remove('status-auto', 'status-success'); //remove existing
     welcomeMessage.classList.add('status-success');  // green for normal
 
-    welcomeMessage.innerHTML = `Thank you ${name}, you are checked in!`;
+    if (eventName) {
+        welcomeMessage.innerHTML = `Thank you ${name}, you are checked in for <strong>${eventName}</strong>!`;
+    } else {
+        welcomeMessage.innerHTML = `Thank you ${name}, you are checked in!`;
+    }
     welcomeMessage.style.display = 'block';
 }
     
@@ -722,52 +734,60 @@ label.required::after {
 
     // ORRRRRR clearBtn.addEventListener('click', clearDisplay);
 
-    // on load: if saved, auto-submit
-    window.addEventListener("load", () => {
-      const locationParam = getQueryParam('location');
-      const eventParam = getQueryParam('event');
+   // on load: if saved, auto-submit
+window.addEventListener("load", () => {
+  const locationParam = getQueryParam('location');
+  const eventParam = getQueryParam('event');
         
-      if(locationParam) {
-        document.getElementById('location').value = locationParam;
-      }
-      if(eventParam) {
-        document.getElementById('event').value = eventParam;
-        const eventDisplay = document.getElementById("eventDisplay");
-        if (eventDisplay) {
-            eventDisplay.textContent = "Event: " + eventParam;
-        }
-      }
+  if (locationParam) {
+    document.getElementById('location').value = locationParam;
+  }
+  if (eventParam) {
+    document.getElementById('event').value = eventParam;
+    const eventDisplay = document.getElementById("eventDisplay");
+    if (eventDisplay) {
+      eventDisplay.textContent = "Event: " + eventParam;
+    }
+  }
 
-      loadReasons();
-      const savedName = localStorage.getItem("clubName");
-      const savedPhone = localStorage.getItem("clubPhone") || "";
-      const savedEmail = localStorage.getItem("clubEmail");
-      const savedGrad = localStorage.getItem("clubGrad");
-      const savedBirthday = localStorage.getItem("clubBirthday");
-      const savedFaculty = localStorage.getItem("clubFaculty");
+  loadReasons();
 
-      if (savedName) {
-        status.classList.add("status-auto");
-        status.classList.remove("status-success");
-    
-        nameInput.value = savedName; //keep filled for quick check-in
-        document.getElementById('phone').value = savedPhone;
-        document.getElementById('email').value = savedEmail;
-        document.getElementById('grad').value = savedGrad;
-        document.getElementById('birthday').value = savedBirthday;
-        document.getElementById('faculty').value = savedFaculty;
+  const savedName = localStorage.getItem("clubName");
+  const savedPhone = localStorage.getItem("clubPhone") || "";
+  const savedEmail = localStorage.getItem("clubEmail");
+  const savedGrad = localStorage.getItem("clubGrad");
+  const savedBirthday = localStorage.getItem("clubBirthday");
+  const savedFaculty = localStorage.getItem("clubFaculty");
 
-        rememberToggle.checked = true;
-        showWelcomeMessage(savedName, true);
+  if (savedName) {
 
-        //setTimeout(() => {clearDisplay(); status.textContent = ""; status.classList.remove("status-auto"); }, 5000);
-      } else {
-        rememberToggle.checked = true;
-        hideWelcomeMessage();
-      }
-      
-        
-    });
+    status.classList.add("status-auto");
+    status.classList.remove("status-success");
+
+    nameInput.value = savedName;
+    document.getElementById('phone').value = savedPhone;
+    document.getElementById('email').value = savedEmail;
+    document.getElementById('grad').value = savedGrad;
+    document.getElementById('birthday').value = savedBirthday;
+    document.getElementById('faculty').value = savedFaculty;
+
+    const eventName = document.getElementById('event').value.trim();
+
+    if (eventName) {
+      // Returning user AND event → auto check-in
+      handleReasonSubmit(savedName, savedPhone, savedEmail, savedGrad, savedBirthday, savedFaculty, eventName, "", true);
+    } else {
+      // Returning user BUT no event → show reasons page
+      showWelcomeMessage(savedName, true);
+    }
+
+  } else {
+    // First time visitor → stay on form
+    hideWelcomeMessage();
+  }
+
+  rememberToggle.checked = true;
+});
 
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
