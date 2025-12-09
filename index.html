@@ -746,12 +746,15 @@ window.addEventListener("load", () => {
     document.getElementById('location').value = locationParam;
   }
   if (eventParam) {
-    document.getElementById('event').value = eventParam;
-    const eventDisplay = document.getElementById("eventDisplay");
-    if (eventDisplay) {
-      eventDisplay.textContent = "Event: " + eventParam;
-    }
+  const cleanedEvent = eventParam.replace(/_/g, " ");
+  
+  document.getElementById('event').value = cleanedEvent;
+
+  const eventDisplay = document.getElementById("eventDisplay");
+  if (eventDisplay) {
+    eventDisplay.textContent = "Event: " + cleanedEvent;
   }
+}
 
   loadReasons();
 
