@@ -645,6 +645,9 @@ label.required::after {
     }
 
     status.textContent = '';
+    // Hide form & reason section after final submission
+    inputSection.style.display = "none";
+    reasonSection.style.display = "none";
 
     const location = document.getElementById('location').value || "unknown";
 
